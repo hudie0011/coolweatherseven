@@ -1,10 +1,10 @@
 package com.coolweatherseven.android;
 
+
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,14 +31,12 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-import static android.R.attr.type;
-
 /**
  * Created by Administrator on 2018/1/31.
  */
 
 public class ChooseAreaFragment extends Fragment {
-    private static final String TAG = "ChooseAreaFragment";
+    //private static final String TAG = "ChooseAreaFragment";
 
     public static final int LEVEL_PROVINCE = 0;
 
@@ -90,22 +88,21 @@ public class ChooseAreaFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater,  ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.choose_area, container, false);
 
         titleText = (TextView) view.findViewById(R.id.title_text);
         backButton = (Button) view.findViewById(R.id.back_button);
         listView = (ListView) view.findViewById(R.id.list_view);
-        adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, dataList);
+        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, dataList);
         listView.setAdapter(adapter);
 
         return view;
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -115,21 +112,21 @@ public class ChooseAreaFragment extends Fragment {
                 } else if (currentLevel == LEVEL_CITY) {
                     selectedCity = cityList.get(position);
                     queryCounties();
-              }
-//                    else if (currentLevel == LEVEL_COUNTY) {
-//                    String weatherId = countyList.get(position).getWeatherId();
-//                    if (getActivity() instanceof MainActivity) {
-//                        Intent intent = new Intent(getActivity(), WeatherActivity.class);
-//                        intent.putExtra("weather_id", weatherId);
-//                        startActivity(intent);
-//                        getActivity().finish();
-//                    } else if (getActivity() instanceof WeatherActivity) {
+                } else if (currentLevel == LEVEL_COUNTY) {
+                    String weatherId = countyList.get(position).getWeatherId();
+                    if (getActivity() instanceof MainActivity) {
+                        Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                        intent.putExtra("weather_id", weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
+                 }
+//                      else if (getActivity() instanceof WeatherActivity) {
 //                        WeatherActivity activity = (WeatherActivity) getActivity();
-//                        activity.drawerLayout.closeDrawers();
-//                        activity.swipeRefresh.setRefreshing(true);
+////                        activity.drawerLayout.closeDrawers();
+////                        activity.swipeRefresh.setRefreshing(true);
 //                        activity.requestWeather(weatherId);
 //                    }
- //               }
+                }
             }
         });
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -144,6 +141,7 @@ public class ChooseAreaFragment extends Fragment {
         });
         queryProvinces();
     }
+
 
     /**
      * 查询全国所有的省，优先从数据库查询，如果没有查询到再去服务器上查询。
@@ -221,7 +219,7 @@ public class ChooseAreaFragment extends Fragment {
     /**
      * 根据传入的地址和类型从服务器上查询省市县数据。
      */
-    private void queryFromServer(String address, String county) {
+    private void queryFromServer(String address, final String type) {
 
 
         showProgressDialog();
